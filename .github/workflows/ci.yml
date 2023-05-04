@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - hlint-ci
   pull_request:
     types:
       - opened
@@ -99,37 +100,37 @@ jobs:
         with:
           name: frontend
           path: site/
-  live-deploy:
-    needs: [live-wasm, live-frontend]
-    name: Deploy Ormolu Live
-    runs-on: ubuntu-latest
-    env:
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-    steps:
-      - uses: actions/download-artifact@v3
-      - name: Combine
-        run: |
-          cp wasm/ormolu.wasm frontend/ormolu.*.wasm
-      - uses: geekyeggo/delete-artifact@v2
-        with:
-          name: |
-            wasm
-            frontend
-      - name: Deploy to Netlify, preview
-        if: env.NETLIFY_AUTH_TOKEN != ''
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: ./frontend
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          alias: ${{ github.event.pull_request.head.sha || github.sha }}
-          enable-pull-request-comment: true
-          enable-commit-comment: false
-          enable-commit-status: true
-      - name: Deploy to Netlify, production
-        if: env.NETLIFY_AUTH_TOKEN != '' && github.ref == 'refs/heads/master'
-        run: |
-          netlify deploy --prod -d ./frontend
+  # live-deploy:
+  #   needs: [live-wasm, live-frontend]
+  #   name: Deploy Ormolu Live
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  #   steps:
+  #     - uses: actions/download-artifact@v3
+  #     - name: Combine
+  #       run: |
+  #         cp wasm/ormolu.wasm frontend/ormolu.*.wasm
+  #     - uses: geekyeggo/delete-artifact@v2
+  #       with:
+  #         name: |
+  #           wasm
+  #           frontend
+  #     - name: Deploy to Netlify, preview
+  #       if: env.NETLIFY_AUTH_TOKEN != ''
+  #       uses: nwtgck/actions-netlify@v2
+  #       with:
+  #         publish-dir: ./frontend
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         alias: ${{ github.event.pull_request.head.sha || github.sha }}
+  #         enable-pull-request-comment: true
+  #         enable-commit-comment: false
+  #         enable-commit-status: true
+  #     - name: Deploy to Netlify, production
+  #       if: env.NETLIFY_AUTH_TOKEN != '' && github.ref == 'refs/heads/master'
+  #       run: |
+  #         netlify deploy --prod -d ./frontend
 
   # prevent stack.yaml from becoming outdated
   stack:
