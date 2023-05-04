@@ -146,11 +146,21 @@
               ];
             };
           };
+          hlint = flake-utils.lib.mkApp {
+            drv = pkgs.writeShellApplication {
+              name = "hlint-check";
+              text = builtins.readFile ./nix/hlint.sh;
+              runtimeInputs = [
+                (defaultGHC.dev.hsPkgs.tool "hlint" "latest")
+              ];
+            };
+          };
         };
         devShells = {
           default = defaultGHC.dev.hsPkgs.shellFor {
             tools = {
               cabal = "latest";
+              hlint = "latest";
               haskell-language-server = "latest";
             };
             withHoogle = false;

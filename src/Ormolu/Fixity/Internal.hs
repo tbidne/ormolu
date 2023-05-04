@@ -196,7 +196,7 @@ inferFixity rdrName (ModuleFixityMap m) =
               UnqualifiedAndQualified mn ->
                 maybe True (== mn) moduleName
               OnlyQualified mn ->
-                maybe False (== mn) moduleName
+                Just mn == moduleName
        in fromMaybe defaultFixityApproximation
             . foldMap (Just . fixityInfoToApproximation . snd)
             $ NE.filter isMatching xs

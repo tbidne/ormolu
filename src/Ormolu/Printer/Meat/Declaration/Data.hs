@@ -273,7 +273,7 @@ isInfix = \case
   Prefix -> False
 
 isSingleConstRec :: [LConDecl GhcPs] -> Bool
-isSingleConstRec [(L _ ConDeclH98 {..})] =
+isSingleConstRec [L _ ConDeclH98 {..}] =
   case con_args of
     RecCon _ -> True
     _ -> False

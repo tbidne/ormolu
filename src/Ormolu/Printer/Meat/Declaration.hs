@@ -203,8 +203,8 @@ declSeries ::
   Bool
 declSeries (L _ x) (L _ y) =
   case (x, y) of
-    ( SigD _ (TypeSig _ _ _),
-      SigD _ (TypeSig _ _ _)
+    ( SigD _ (TypeSig {}),
+      SigD _ (TypeSig {})
       ) -> True
     _ -> False
 
@@ -234,7 +234,7 @@ isPragma = \case
 -- Declarations that do not refer to names
 
 pattern Splice :: HsDecl GhcPs
-pattern Splice <- SpliceD _ (SpliceDecl _ _ _)
+pattern Splice <- SpliceD _ (SpliceDecl {})
 
 -- Declarations referring to a single name
 
@@ -321,6 +321,6 @@ patBindNames (ViewPat _ _ (L _ p)) = patBindNames p
 patBindNames (SplicePat _ _) = []
 patBindNames (LitPat _ _) = []
 patBindNames (SigPat _ (L _ p) _) = patBindNames p
-patBindNames (NPat _ _ _ _) = []
+patBindNames (NPat {}) = []
 patBindNames (NPlusKPat _ (L _ n) _ _ _ _) = [n]
 patBindNames (ConPat _ _ d) = concatMap (patBindNames . unLoc) (hsConPatArgs d)

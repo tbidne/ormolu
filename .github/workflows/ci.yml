@@ -42,6 +42,10 @@ jobs:
         run: |
           nix run .#format
           git diff --exit-code --color=always
+      - name: Runs HLint
+        continue-on-error: true
+        run: |
+          nix run .#hlint
       - name: pre-commit-check
         run: |
           nix build -L .#pre-commit-check

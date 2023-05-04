@@ -312,9 +312,7 @@ p_grhs' parentPlacement placer render style (GRHS _ guards body) =
             then placer (unLoc body)
             else Normal
     endOfGuards =
-      case NE.nonEmpty guards of
-        Nothing -> Nothing
-        Just gs -> (Just . getLocA . NE.last) gs
+      fmap (getLocA . NE.last) (NE.nonEmpty guards)
     p_body = located body render
 
 p_hsCmd :: HsCmd GhcPs -> R ()
@@ -385,9 +383,9 @@ withSpacing f l = located l $ \x -> do
         -- that prints comments, so we just have to deal with
         -- blank lines between statements here.
         Just (StatementSpan lastSpn) ->
-          if srcSpanStartLine currentSpn > srcSpanEndLine lastSpn + 1
-            then newline
-            else return ()
+          when
+            (srcSpanStartLine currentSpn > srcSpanEndLine lastSpn + 1)
+            newline
         _ -> return ()
       f x
       -- In some cases the (f x) expression may insert a new mark. We want
@@ -702,7 +700,7 @@ p_hsExpr' isApp s = \case
             Boxed -> parens
             Unboxed -> parensHash
     enclSpan <-
-      fmap (flip RealSrcSpan Strict.Nothing) . maybeToList
+      fmap (`RealSrcSpan` Strict.Nothing) . maybeToList
         <$> getEnclosingSpan
     if isSection
       then
@@ -1246,10 +1244,10 @@ blockPlacement _ _ = Normal
 -- | Determine placement of a given command.
 cmdPlacement :: HsCmd GhcPs -> Placement
 cmdPlacement = \case
-  HsCmdLam _ _ -> Hanging
-  HsCmdCase _ _ _ -> Hanging
-  HsCmdLamCase _ _ _ -> Hanging
-  HsCmdDo _ _ -> Hanging
+  HsCmdLam {} -> Hanging
+  HsCmdCase {} -> Hanging
+  HsCmdLamCase {} -> Hanging
+  HsCmdDo {} -> Hanging
   _ -> Normal
 
 -- | Determine placement of a top level command.
@@ -1265,8 +1263,8 @@ exprPlacement = \case
       | isOneLineSpan (combineSrcSpans' $ fmap getLocA (x :| xs)) ->
           Hanging
     _ -> Normal
-  HsLamCase _ _ _ -> Hanging
-  HsCase _ _ _ -> Hanging
+  HsLamCase {} -> Hanging
+  HsCase {} -> Hanging
   HsDo _ (DoExpr _) _ -> Hanging
   HsDo _ (MDoExpr _) _ -> Hanging
   OpApp _ _ op y ->
