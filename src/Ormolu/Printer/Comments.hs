@@ -28,7 +28,7 @@ spitPrecedingComments ::
   R ()
 spitPrecedingComments ref = do
   comments <- handleCommentSeries (spitPrecedingComment ref)
-  when (not $ null comments) $ do
+  unless (null comments) $ do
     lastMark <- getSpanMark
     -- Insert a blank line between the preceding comments and the thing
     -- after them if there was a blank line in the input.

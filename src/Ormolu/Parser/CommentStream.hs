@@ -219,7 +219,7 @@ extractPragmas input = go initialLs id id
              in go ls' (csSoFar . (x' :)) pragmasSoFar xs
           Just pragma ->
             let combined ys = (csSoFar ys, pragma)
-                go' ls' ys rest = go ls' id (pragmasSoFar . (combined ys :)) rest
+                go' ls' ys = go ls' id (pragmasSoFar . (combined ys :))
              in case xs of
                   [] -> go' ls [] xs
                   (y : ys) ->

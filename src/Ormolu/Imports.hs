@@ -53,7 +53,7 @@ combineImports (L lx ImportDecl {..}) (L _ y) =
     ImportDecl
       { ideclImportList = case (ideclImportList, GHC.ideclImportList y) of
           (Just (hiding, L l' xs), Just (_, L _ ys)) ->
-            Just (hiding, (L l' (normalizeLies (xs ++ ys))))
+            Just (hiding, L l' (normalizeLies (xs ++ ys)))
           _ -> Nothing,
         ..
       }
@@ -201,9 +201,9 @@ compareRdrName :: RdrName -> RdrName -> Ordering
 compareRdrName x y =
   case (getNameStr x, getNameStr y) of
     ([], []) -> EQ
-    ((_ : _), []) -> GT
-    ([], (_ : _)) -> LT
-    ((x' : _), (y' : _)) ->
+    (_ : _, []) -> GT
+    ([], _ : _) -> LT
+    (x' : _, y' : _) ->
       case (isAlphaNum x', isAlphaNum y') of
         (False, False) -> x `compare` y
         (True, False) -> LT

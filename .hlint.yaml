@@ -1,0 +1,4 @@
+- ignore: {name: "Use camelCase"}
+
+# TH within CPP
+- ignore: {name: "Unused LANGUAGE pragma", within: "Ormolu.Fixity"}
